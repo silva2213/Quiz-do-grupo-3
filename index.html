@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grupo Três</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #fdfbfb, #ebedee, #e0e0e0, #d5d5d5, #c9c9c9);
+      padding: 20px;
+      display: flex; /* Use flexbox for centering */
+      justify-content: center; /* Center horizontally */
+      align-items: center; /* Center vertically */
+      min-height: 100vh; /* Full viewport height */
+      margin: 0;
+    }
+
+    .quiz-container {
+      background-color: #fff;
+      max-width: 900px;
+      margin: auto;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      text-align: center; /* Center content inside container */
+      display: none; /* Hidden by default, shown when game starts */
+      flex-direction: column; /* For proper internal layout */
+    }
+
+    .start-screen {
+        background-color: #fff;
+        max-width: 600px;
+        padding: 50px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        text-align: center;
+    }
+
+    .start-screen h1 {
+        color: #333;
+        margin-bottom: 25px;
+        font-size: 2.2em;
+    }
+
+    .start-screen button {
+        padding: 15px 30px;
+        font-size: 1.2em;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .start-screen button:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .timer-bar-container {
+        width: 100%;
+        background-color: #eee;
+        border-radius: 5px;
+        height: 10px;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .timer-bar {
+        height: 100%;
+        width: 100%;
+        background-color: #4CAF50;
+        transition: width linear;
+    }
+
+    .timer-text {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #555;
+    }
+
+    .question {
+      display: none;
+      margin-bottom: 40px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+      text-align: left; /* Align question text to left */
+    }
+
+    .question.active {
+      display: block;
+    }
+
+    .question.correct {
+      border-color: #28a745;
+      background-color: #d4edda;
+    }
+
+    .question.incorrect {
+      border-color: #dc3545;
+      background-color: #f8d7da;
+    }
+
+    .question-text {
+      font-weight: bold;
+      font-size: 18px;
+      color: #444;
+      margin-bottom: 15px;
+    }
+
+    .answers label {
+      display: block;
+      margin-bottom: 8px;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #f8f8f8;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .answers label:hover {
+      background-color: #e0e0e0;
+      transform: scale(1.01);
+    }
+
+    input[type="radio"] {
+      margin-right: 10px;
+    }
+
+    .submit-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-button:hover {
+      background-color: #0056b3;
+    }
+
+    #result {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      padding: 15px;
+      border-radius: 10px;
+      background-color: #f0f0f0;
+      color: #222;
+      transition: 0.3s;
+    }
+
+    .attempts-info {
+        text-align: center;
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 15px;
+    }
+
+    .points-info {
+        font-size: 1.1em;
+        font-weight: bold;
+        margin-top: 10px;
+        color: #555;
+    }
+
+    .correct-answer-display {
+        font-weight: bold;
+        color: #28a745;
+        margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="start-screen" id="startScreen">
+    <h1>Bem-vindo ao Quiz do Grupo 3!</h1>
+    <p>Teste seus conhecimentos com tempo limitado.</p>
+    <button onclick="startGame()">Começar Jogo</button>
+</div>
+
+<div class="quiz-container" id="quizContainer">
+  <h2>Quiz: O Templo de Salomão</h2>
+  <div class="attempts-info">Você tem **2 chances** para cada pergunta.</div>
+  <div class="timer-text" id="timerText"></div>
+  <div class="timer-bar-container">
+      <div class="timer-bar" id="timerBar"></div>
+  </div>
+  <form id="quizForm"></form>
+  <div class="points-info">Pontuação Total: <span id="currentScore">0</span></div>
+  <div id="result"></div>
+</div>
+
+<script>
+const perguntas = [
+  {
+    pergunta: "1) Qual é o principal tema abordado pelo grupo 3?",
+    opcoes: {
+      a: "O Reino de Israel",
+      b: "A Arca da Aliança",
+      c: "O Templo de Salomão",
+      d: "A Cidade de Jerusalém"
+    },
+    correta: "c",
+    tentativas: 0,
+    timeLimit: 10
+  },
+  {
+    pergunta: "2) Onde foi construído o Templo de Salomão?",
+    opcoes: {
+      a: "Monte Sinai",
+      b: "Monte Carmelo",
+      c: "Monte Moriá",
+      d: "Monte Nebo"
+    },
+    correta: "c",
+    tentativas: 0,
+    timeLimit: 25
+  },
+  {
+    pergunta: "3) Qual foi o rei que Deus escolheu para construir o Templo?",
+    opcoes: {
+      a: "Rei Davi",
+      b: "Rei Saul",
+      c: "Rei Salomão",
+      d: "Rei Ezequias"
+    },
+    correta: "c",
+    tentativas: 0,
+    timeLimit: 20
+  },
+  {
+    pergunta: "4) Quais os principais materiais usados na construção do templo?",
+    opcoes: {
+      a: "Areia e barro",
+      b: "Tijolos e cimento",
+      c: "Madeira de pinho e argila",
+      d: "Ouro, prata, cobre, ferro, pedras preciosas e madeira de cedro."
+    },
+    correta: "d",
+    tentativas: 0,
+    timeLimit: 20
+  },
+  {
+    pergunta: "5) O que o Templo simbolizava?",
+    opcoes: {
+      a: "O poder do rei",
+      b: "A sabedoria de Salomão",
+      c: "A cultura hebraica",
+      d: "A presença e a proteção de Deus."
+    },
+    correta: "d",
+    tentativas: 0,
+    timeLimit: 30
+  },
+  {
+    pergunta: "6) Quantos anos durou a construção do Templo de Salomão?",
+    opcoes: {
+      a: "3 anos",
+      b: "5 anos",
+      c: "7 anos",
+      d: "10 anos"
+    },
+    correta: "c",
+    tentativas: 0,
+    timeLimit: 25
+  },
+  {
+    pergunta: "7) Quais eram as três partes principais do Templo?",
+    opcoes: {
+      a: "Entrada, altar e sala principal",
+      b: "Lugar santo, lugar santíssimo e pátios",
+      c: "Sacada, altar e torre",
+      d: "Jardim, fonte e sala secreta"
+    },
+    correta: "b",
+    tentativas: 0,
+    timeLimit: 20
+  },
+  {
+    pergunta: "8) Quantos bois sustentavam a Pia de Bronze?",
+    opcoes: {
+      a: "6 bois",
+      b: "8 bois",
+      c: "10 bois",
+      d: "12 bois"
+    },
+    correta: "d",
+    tentativas: 0,
+    timeLimit: 30
+  },
+  {
+    pergunta: "9) Quem era o único que podia entrar no Lugar Santo dos Santos?",
+    opcoes: {
+      a: "Rei",
+      b: "Levita",
+      c: "Sumo Sacerdote",
+      d: "Profeta"
+    },
+    correta: "c",
+    tentativas: 0,
+    timeLimit: 25
+  },
+  {
+    pergunta: "10) O que havia dentro da Arca da Aliança?",
+    opcoes: {
+      a: "Somente as tábuas da Lei",
+      b: "A Bíblia, uma cruz e um cajado",
+      c: "Maná, vara de Arão e tábuas da Lei",
+      d: "Roupas sacerdotais e ouro"
+    },
+    correta: "c",
+    tentativas: 0,
+    timeLimit: 50
+  }
+];
+
+const quizForm = document.getElementById("quizForm");
+const timerText = document.getElementById("timerText");
+const timerBar = document.getElementById("timerBar");
+const currentScoreDisplay = document.getElementById("currentScore");
+const startScreen = document.getElementById("startScreen");
+const quizContainer = document.getElementById("quizContainer");
+
+let totalScore = 0;
+let currentQuestionIndex = 0;
+let timerInterval;
+let timeLeft;
+let currentQuestionTimeLimit;
+
+const MAX_POINTS_FIRST_ATTEMPT = 30; // Max points for correct on 1st try
+const MAX_POINTS_SECOND_ATTEMPT = 15; // Max points for correct on 2nd try (50% of first attempt max)
+const INCORRECT_ANSWER_PENALTY = 2; // Points lost for each incorrect answer
+
+function startGame() {
+    startScreen.style.display = 'none';
+    quizContainer.style.display = 'flex'; // Show the quiz container
+    mostrarPergunta(currentQuestionIndex);
+    updateScoreDisplay();
+}
+
+function updateScoreDisplay() {
+    currentScoreDisplay.textContent = Math.round(totalScore); // Round score for display
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+
+  currentQuestionTimeLimit = perguntas[currentQuestionIndex].timeLimit;
+  timeLeft = currentQuestionTimeLimit;
+  timerText.textContent = `Tempo restante: ${timeLeft} segundos`;
+  timerBar.style.width = '100%';
+  timerBar.style.backgroundColor = '#4CAF50';
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    timerText.textContent = `Tempo restante: ${timeLeft} segundos`;
+    timerBar.style.width = `${(timeLeft / currentQuestionTimeLimit) * 100}%`;
+
+    if (timeLeft <= currentQuestionTimeLimit / 3) {
+        timerBar.style.backgroundColor = '#ffc107';
+    }
+    if (timeLeft <= 5) {
+        timerBar.style.backgroundColor = '#dc3545';
+    }
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      handleTimeUp();
+    }
+  }, 1000);
+}
+
+function handleTimeUp() {
+    const q = perguntas[currentQuestionIndex];
+    const feedbackDiv = document.getElementById(`feedback${currentQuestionIndex}`);
+    const perguntaDiv = quizForm.querySelector(".question.active");
+    const submitButton = perguntaDiv ? perguntaDiv.querySelector(".submit-button") : null;
+
+    // Disable all radio buttons
+    const inputs = perguntaDiv.querySelectorAll("input[type='radio']");
+    inputs.forEach(input => input.disabled = true);
+
+    if (q.tentativas < 2) {
+        q.tentativas++;
+        // Apply penalty if it's the first time running out of time (acting as first incorrect attempt)
+        if (q.tentativas === 1) {
+            totalScore -= INCORRECT_ANSWER_PENALTY;
+            updateScoreDisplay();
+            feedbackDiv.innerHTML = `Tempo esgotado! Resposta incorreta. Você perdeu ${INCORRECT_ANSWER_PENALTY} pontos. Você tem mais ${2 - q.tentativas} chance.`;
+        } else { // This case shouldn't be reached if only 2 attempts total, but for safety
+             feedbackDiv.innerHTML = `Tempo esgotado! Resposta incorreta. Você tem mais ${2 - q.tentativas} chance.`;
+        }
+        feedbackDiv.style.color = "red";
+        perguntaDiv.classList.add("incorrect");
+
+        inputs.forEach(input => {
+            input.disabled = false;
+            input.checked = false;
+        });
+        startTimer();
+    } else {
+        feedbackDiv.innerHTML = `Tempo esgotado! As 2 chances foram usadas. A resposta certa era: <span class="correct-answer-display">(${q.correta}) ${q.opcoes[q.correta]}</span>`;
+        feedbackDiv.style.color = "red";
+        perguntaDiv.classList.add("incorrect");
+        if (submitButton) submitButton.style.display = 'none';
+        setTimeout(proximaPergunta, 2000);
+    }
+}
+
+
+function mostrarPergunta(index) {
+  quizForm.innerHTML = "";
+
+  if (index >= perguntas.length) {
+    mostrarPontuacaoFinal();
+    return;
+  }
+
+  const q = perguntas[index];
+  const div = document.createElement("div");
+  div.classList.add("question", "active");
+
+  let html = `<div class="question-text">${q.pergunta}</div><div class="answers">`;
+  for (let letra in q.opcoes) {
+    html += `<label><input type="radio" name="q${index}" value="${letra}"> (${letra}) ${q.opcoes[letra]}</label>`;
+  }
+  html += `</div>`;
+  html += `<div id="feedback${index}" style="margin-top: 15px;"></div>`;
+  html += `<button type="button" class="submit-button" onclick="verificarResposta(${index})">Enviar Resposta</button>`;
+
+  div.innerHTML = html;
+  quizForm.appendChild(div);
+
+  startTimer();
+}
+
+function verificarResposta(index) {
+  clearInterval(timerInterval);
+
+  const q = perguntas[index];
+  const selectedInput = document.querySelector(`input[name="q${index}"]:checked`);
+  const feedbackDiv = document.getElementById(`feedback${index}`);
+  const perguntaDiv = selectedInput ? selectedInput.closest(".question") : null;
+  const submitButton = perguntaDiv ? perguntaDiv.querySelector(".submit-button") : null;
+
+  if (!selectedInput) {
+    feedbackDiv.textContent = "Por favor, selecione uma resposta.";
+    feedbackDiv.style.color = "orange";
+    startTimer();
+    return;
+  }
+
+  const selecionado = selectedInput.value;
+  const respostaCertaTexto = q.opcoes[q.correta];
+
+  const inputs = perguntaDiv.querySelectorAll("input[type='radio']");
+  inputs.forEach(input => input.disabled = true);
+
+  q.tentativas++;
+
+  if (selecionado === q.correta) {
+    feedbackDiv.innerHTML = `Resposta correta! <span class="correct-answer-display">(${q.correta}) ${respostaCertaTexto}</span>`;
+    feedbackDiv.style.color = "green";
+    perguntaDiv.classList.add("correct");
+
+    let pointsAwarded = 0;
+    const timePercentage = timeLeft / currentQuestionTimeLimit;
+
+    if (q.tentativas === 1) {
+        pointsAwarded = Math.round(MAX_POINTS_FIRST_ATTEMPT * timePercentage);
+        totalScore += pointsAwarded;
+        feedbackDiv.innerHTML += `<br>Pontos: +${pointsAwarded}`;
+    } else { // q.tentativas === 2
+        pointsAwarded = Math.round(MAX_POINTS_SECOND_ATTEMPT * timePercentage);
+        totalScore += pointsAwarded;
+        feedbackDiv.innerHTML += `<br>Pontos: +${pointsAwarded} (Segunda chance)`;
+    }
+    updateScoreDisplay();
+
+    if (submitButton) submitButton.style.display = 'none';
+    setTimeout(proximaPergunta, 1500);
+  } else {
+    if (q.tentativas < 2) {
+      totalScore -= INCORRECT_ANSWER_PENALTY;
+      updateScoreDisplay();
+      feedbackDiv.innerHTML = `Resposta incorreta. Você perdeu ${INCORRECT_ANSWER_PENALTY} pontos. Você tem mais ${2 - q.tentativas} chance.`;
+      feedbackDiv.style.color = "red";
+      perguntaDiv.classList.add("incorrect");
+
+      inputs.forEach(input => input.disabled = false);
+      selectedInput.checked = false;
+      startTimer();
+    } else {
+      feedbackDiv.innerHTML = `Resposta incorreta. As 2 chances foram usadas. A resposta certa era: <span class="correct-answer-display">(${q.correta}) ${respostaCertaTexto}</span>`;
+      feedbackDiv.style.color = "red";
+      perguntaDiv.classList.add("incorrect");
+      if (submitButton) submitButton.style.display = 'none';
+      setTimeout(proximaPergunta, 2000);
+    }
+  }
+}
+
+function proximaPergunta() {
+  currentQuestionIndex++;
+  mostrarPergunta(currentQuestionIndex);
+}
+
+function mostrarPontuacaoFinal() {
+  quizForm.innerHTML = "";
+  timerText.style.display = 'none'; // Hide timer elements
+  timerBar.style.display = 'none'; // Hide timer elements
+  document.querySelector('.attempts-info').style.display = 'none'; // Hide attempts info
+  document.querySelector('.points-info').style.display = 'none'; // Hide current score
+
+  const result = document.getElementById("result");
+
+  // Calculate max possible score (30 points per question * number of questions)
+  const maxPossibleScore = perguntas.length * MAX_POINTS_FIRST_ATTEMPT;
+
+  result.innerHTML = `Quiz Finalizado! Sua pontuação total: <strong>${Math.round(totalScore)}</strong> pontos.`;
+
+  const scorePercentage = (totalScore / maxPossibleScore) * 100;
+
+  if (scorePercentage >= 80) {
+    result.style.backgroundColor = "#d4edda";
+    result.style.color = "#155724";
+  } else if (scorePercentage >= 50) {
+    result.style.backgroundColor = "#fff3cd";
+    result.style.color = "#856404";
+  } else {
+    result.style.backgroundColor = "#f8d7da";
+    result.style.color = "#721c24";
+  }
+}
+
+// Initial state: hide quiz container, show start screen
+window.onload = () => {
+    quizContainer.style.display = 'none';
+    startScreen.style.display = 'block';
+};
+</script>
+
+</body>
+</html>
