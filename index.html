@@ -7,7 +7,8 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #fdfbfb, #ebedee, #e0e0e0, #d5d5d5, #c9c9c9);
+      /* Background com gradiente dourado suave */
+      background: linear-gradient(to right, #f0ead6, #e6d7ab, #dcd3a3, #d2c99b, #c8bf93);
       padding: 20px;
       display: flex; /* Use flexbox for centering */
       justify-content: center; /* Center horizontally */
@@ -17,28 +18,30 @@
     }
 
     .quiz-container {
-      background-color: #fff;
+      /* Fundo do container ligeiramente mais claro */
+      background-color: #f5f3eb;
       max-width: 900px;
       margin: auto;
       padding: 40px;
       border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      /* Sombra suave para dar profundidade */
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
       text-align: center; /* Center content inside container */
       display: none; /* Hidden by default, shown when game starts */
       flex-direction: column; /* For proper internal layout */
     }
 
     .start-screen {
-        background-color: #fff;
+        background-color: #f5f3eb;
         max-width: 600px;
         padding: 50px;
         border-radius: 15px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         text-align: center;
     }
 
     .start-screen h1 {
-        color: #333;
+        color: #554d3b; /* Dourado mais escuro para o título */
         margin-bottom: 25px;
         font-size: 2.2em;
     }
@@ -46,7 +49,8 @@
     .start-screen button {
         padding: 15px 30px;
         font-size: 1.2em;
-        background-color: #007bff;
+        /* Botão com um tom dourado mais forte */
+        background-color: #b8a363;
         color: white;
         border: none;
         border-radius: 8px;
@@ -55,14 +59,14 @@
     }
 
     .start-screen button:hover {
-        background-color: #0056b3;
+        background-color: #9c8952; /* Dourado mais escuro no hover */
         transform: translateY(-2px);
     }
 
     h2 {
       text-align: center;
       margin-bottom: 30px;
-      color: #333;
+      color: #554d3b; /* Dourado mais escuro para o título */
     }
 
     .timer-bar-container {
@@ -77,7 +81,7 @@
     .timer-bar {
         height: 100%;
         width: 100%;
-        background-color: #4CAF50;
+        background-color: #b8a363; /* Barra do timer em dourado */
         transition: width linear;
     }
 
@@ -85,7 +89,7 @@
         text-align: center;
         font-weight: bold;
         margin-bottom: 15px;
-        color: #555;
+        color: #554d3b; /* Texto do timer em dourado escuro */
     }
 
     .question {
@@ -103,8 +107,8 @@
     }
 
     .question.correct {
-      border-color: #28a745;
-      background-color: #d4edda;
+      border-color: #8f7f52; /* Dourado para resposta correta */
+      background-color: #f0e68c26; /* Amarelo claro translúcido */
     }
 
     .question.incorrect {
@@ -115,7 +119,7 @@
     .question-text {
       font-weight: bold;
       font-size: 18px;
-      color: #444;
+      color: #554d3b; /* Dourado escuro para o texto da pergunta */
       margin-bottom: 15px;
     }
 
@@ -142,7 +146,7 @@
       margin-top: 20px;
       padding: 10px 20px;
       font-size: 16px;
-      background-color: #007bff;
+      background-color: #b8a363; /* Botão em dourado */
       color: white;
       border: none;
       border-radius: 6px;
@@ -154,7 +158,7 @@
     }
 
     .submit-button:hover {
-      background-color: #0056b3;
+      background-color: #9c8952; /* Dourado mais escuro no hover */
     }
 
     #result {
@@ -165,14 +169,14 @@
       padding: 15px;
       border-radius: 10px;
       background-color: #f0f0f0;
-      color: #222;
+      color: #554d3b; /* Texto do resultado em dourado */
       transition: 0.3s;
     }
 
     .attempts-info {
         text-align: center;
         font-size: 14px;
-        color: #666;
+        color: #554d3b; /* Texto das tentativas em dourado */
         margin-bottom: 15px;
     }
 
@@ -180,12 +184,12 @@
         font-size: 1.1em;
         font-weight: bold;
         margin-top: 10px;
-        color: #555;
+        color: #554d3b; /* Pontuação em dourado */
     }
 
     .correct-answer-display {
         font-weight: bold;
-        color: #28a745;
+        color: #8f7f52; /* Resposta correta em dourado */
         margin-top: 10px;
     }
   </style>
@@ -193,8 +197,8 @@
 <body>
 
 <div class="start-screen" id="startScreen">
-    <h1>Bem-vindo ao Quiz do Grupo 3!</h1>
-    <p>Teste seus conhecimentos com tempo limitado.</p>
+    <h1>Bem-vindo ao Quiz do Templo de Salomão!</h1>
+    <p>Teste seus conhecimentos com tempo limitado e duas chances por pergunta.</p>
     <button onclick="startGame()">Começar Jogo</button>
 </div>
 
@@ -347,19 +351,20 @@ let timerInterval;
 let timeLeft;
 let currentQuestionTimeLimit;
 
-const MAX_POINTS_FIRST_ATTEMPT = 30; // Max points for correct on 1st try
-const MAX_POINTS_SECOND_ATTEMPT = 15; // Max points for correct on 2nd try (50% of first attempt max)
-const INCORRECT_ANSWER_PENALTY = 2; // Points lost for each incorrect answer
+const MAX_POINTS_FIRST_ATTEMPT = 30;
+const MAX_POINTS_SECOND_ATTEMPT = 15;
+const INCORRECT_ANSWER_PENALTY = 2;
 
 function startGame() {
+    console.log("Starting game..."); // Mensagem de depuração
     startScreen.style.display = 'none';
-    quizContainer.style.display = 'flex'; // Show the quiz container
+    quizContainer.style.display = 'flex';
     mostrarPergunta(currentQuestionIndex);
     updateScoreDisplay();
 }
 
 function updateScoreDisplay() {
-    currentScoreDisplay.textContent = Math.round(totalScore); // Round score for display
+    currentScoreDisplay.textContent = Math.round(totalScore);
 }
 
 function startTimer() {
@@ -369,7 +374,7 @@ function startTimer() {
   timeLeft = currentQuestionTimeLimit;
   timerText.textContent = `Tempo restante: ${timeLeft} segundos`;
   timerBar.style.width = '100%';
-  timerBar.style.backgroundColor = '#4CAF50';
+  timerBar.style.backgroundColor = '#b8a363';
 
   timerInterval = setInterval(() => {
     timeLeft--;
@@ -391,23 +396,22 @@ function startTimer() {
 }
 
 function handleTimeUp() {
+    console.log("Time's up for question:", currentQuestionIndex); // Mensagem de depuração
     const q = perguntas[currentQuestionIndex];
     const feedbackDiv = document.getElementById(`feedback${currentQuestionIndex}`);
     const perguntaDiv = quizForm.querySelector(".question.active");
     const submitButton = perguntaDiv ? perguntaDiv.querySelector(".submit-button") : null;
 
-    // Disable all radio buttons
     const inputs = perguntaDiv.querySelectorAll("input[type='radio']");
     inputs.forEach(input => input.disabled = true);
 
     if (q.tentativas < 2) {
         q.tentativas++;
-        // Apply penalty if it's the first time running out of time (acting as first incorrect attempt)
         if (q.tentativas === 1) {
             totalScore -= INCORRECT_ANSWER_PENALTY;
             updateScoreDisplay();
             feedbackDiv.innerHTML = `Tempo esgotado! Resposta incorreta. Você perdeu ${INCORRECT_ANSWER_PENALTY} pontos. Você tem mais ${2 - q.tentativas} chance.`;
-        } else { // This case shouldn't be reached if only 2 attempts total, but for safety
+        } else {
              feedbackDiv.innerHTML = `Tempo esgotado! Resposta incorreta. Você tem mais ${2 - q.tentativas} chance.`;
         }
         feedbackDiv.style.color = "red";
@@ -429,6 +433,7 @@ function handleTimeUp() {
 
 
 function mostrarPergunta(index) {
+  console.log("Displaying question:", index); // Mensagem de depuração
   quizForm.innerHTML = "";
 
   if (index >= perguntas.length) {
@@ -455,6 +460,7 @@ function mostrarPergunta(index) {
 }
 
 function verificarResposta(index) {
+  console.log("Verifying answer for question:", index); // Mensagem de depuração
   clearInterval(timerInterval);
 
   const q = perguntas[index];
@@ -490,7 +496,7 @@ function verificarResposta(index) {
         pointsAwarded = Math.round(MAX_POINTS_FIRST_ATTEMPT * timePercentage);
         totalScore += pointsAwarded;
         feedbackDiv.innerHTML += `<br>Pontos: +${pointsAwarded}`;
-    } else { // q.tentativas === 2
+    } else {
         pointsAwarded = Math.round(MAX_POINTS_SECOND_ATTEMPT * timePercentage);
         totalScore += pointsAwarded;
         feedbackDiv.innerHTML += `<br>Pontos: +${pointsAwarded} (Segunda chance)`;
@@ -527,33 +533,37 @@ function proximaPergunta() {
 
 function mostrarPontuacaoFinal() {
   quizForm.innerHTML = "";
-  timerText.style.display = 'none'; // Hide timer elements
-  timerBar.style.display = 'none'; // Hide timer elements
-  document.querySelector('.attempts-info').style.display = 'none'; // Hide attempts info
-  document.querySelector('.points-info').style.display = 'none'; // Hide current score
+  timerText.style.display = 'none';
+  timerBar.style.display = 'none';
+  document.querySelector('.attempts-info').style.display = 'none';
+  document.querySelector('.points-info').style.display = 'none';
 
   const result = document.getElementById("result");
 
-  // Calculate max possible score (30 points per question * number of questions)
   const maxPossibleScore = perguntas.length * MAX_POINTS_FIRST_ATTEMPT;
 
   result.innerHTML = `Quiz Finalizado! Sua pontuação total: <strong>${Math.round(totalScore)}</strong> pontos.`;
 
   const scorePercentage = (totalScore / maxPossibleScore) * 100;
 
+  let resultColor = "";
+  let resultTextColor = "";
+
   if (scorePercentage >= 80) {
-    result.style.backgroundColor = "#d4edda";
-    result.style.color = "#155724";
+    resultColor = "#d4edda";
+    resultTextColor = "#155724";
   } else if (scorePercentage >= 50) {
-    result.style.backgroundColor = "#fff3cd";
-    result.style.color = "#856404";
+    resultColor = "#fff3cd";
+    resultTextColor = "#856404";
   } else {
-    result.style.backgroundColor = "#f8d7da";
-    result.style.color = "#721c24";
+    resultColor = "#f8d7da";
+    resultTextColor = "#721c24";
   }
+
+  result.style.backgroundColor = resultColor;
+  result.style.color = resultTextColor;
 }
 
-// Initial state: hide quiz container, show start screen
 window.onload = () => {
     quizContainer.style.display = 'none';
     startScreen.style.display = 'block';
